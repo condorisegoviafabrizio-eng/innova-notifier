@@ -2,10 +2,13 @@ import os, json, time, logging, urllib.parse, requests, sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 # --- Configuracion (GitHub Secrets o .env local) ---
-load_dotenv()
 INNOVA_EMAIL = os.getenv("INNOVA_EMAIL")
 INNOVA_PASSWORD = os.getenv("INNOVA_PASSWORD")
 WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER")
