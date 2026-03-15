@@ -18,8 +18,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install dependencies
-        run: |
-          pip install requests beautifulsoup4
+        run: pip install requests beautifulsoup4
       - name: Run Notifier
         env:
           INNOVA_EMAIL: ${{ secrets.INNOVA_EMAIL }}
@@ -31,6 +30,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add mensajes_vistos.json
-          git commit -m "Update seen messages [skip ci]" || echo "No changes to commit"
+          git add mensajes_vistos.json historial_mensajes.json index.html
+          git commit -m "Update dashboard [skip ci]" || echo "No changes"
           git push
