@@ -38,34 +38,15 @@ def guardar_mensajes_vistos(ids):
 
 def login(session):
     log.info(f"Accediendo a {LOGIN_URL}...")
-    r = session.get(LOGIN_URL, timeout=30)
-    log.info(f"Respuesta recibida: {r.status_code}")
-    
-    if r.status_code != 200:
-        log.error("No se pudo cargar la pagina de login.")
-        return False
-
+    r = session.get(LOGIN_URL, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
+    if r.status_code != 200: return False
     soup = BeautifulSoup(r.text, "html.parser")
     token_tag = soup.find("input", {"name": "__RequestVerificationToken"})
-    
-    if not token_tag:
-        log.error("No se encontro el token de seguridad. Es posible que el sitio este bloqueando a GitHub.")
-        # Opcional: imprimir un trozo de la respuesta para depurar
-        log.info(f"Contenido parcial: {r.text[:500]}")
-        return False
-        
+    if not token_tag: return False
     token = token_tag["value"]
-    log.info("Token encontrado, enviando credenciales...")
-    
     data = {"Correo": INNOVA_EMAIL, "Password": INNOVA_PASSWORD, "__RequestVerificationToken": token}
     r = session.post(LOGIN_URL, data=data, timeout=30)
-    
-    if "Login" not in r.url:
-        log.info("¡Login exitoso!")
-        return True
-    
-    log.error("Credenciales incorrectas o login fallido.")
-    return False
+    return "Login" not in r.url
 
 def obtener_mensajes(session):
     payload = {"IdPersona": "0", "TipoBandeja": "1", "NumeroPagina": "1", "TamanioPagina": "20", "EsFavorito": "false"}
@@ -85,48 +66,41 @@ def obtener_detalle(session, msg_id):
 
 def enviar_whatsapp(msg):
     url = f"https://api.callmebot.com/whatsapp.php?phone={WHATSAPP_NUMBER}&text={urllib.parse.quote(msg)}&apikey={CALLMEBOT_API_KEY}"
-    return requests.get(url).status_code == 200
+    try:
+        return requests.get(url, timeout=20).status_code == 200
+    except: return False
 
 def generar_resumen(m, detalle):
     asunto = m['asunto'].upper()
-    es_imp = any(w in asunto for w in ["FACTURA", "PAGO", "IMPORTANTE"])
-    txt = f"*NUEVO MENSAJE INNOVA*"
-    if es_imp: txt += " (PRIORIDAD)"
-    txt += f"\n\nAsunto: {m['asunto']}\nDe: {m['remitente']}\n"
-    if detalle: txt += f"\nContenido:\n{detalle[:500]}..."
+    es_imp = any(w in asunto for w in ["FACTURA", "PAGO", "IMPORTANTE", "CIRCULAR"])
+    header = f"*NUEVO MENSAJE INNOVA*"
+    if es_imp: header = "🚨 " + header + " (PRIORIDAD) 🚨"
+    else: header = "📩 " + header
+    txt = f"{header}\n\n*Asunto:* {m['asunto']}\n*De:* {m['remitente']}\n*Fecha:* {m['fecha']}\n"
+    if detalle: txt += f"\n*Contenido:*\n{detalle[:500]}..."
+    txt += f"\n\n🔗 innovafamily.pe"
     return txt
 
 def main():
-    if not all([INNOVA_EMAIL, INNOVA_PASSWORD, WHATSAPP_NUMBER, CALLMEBOT_API_KEY]):
-        log.error("Faltan variables de entorno en GitHub Secrets.")
-        return
-
+    if not all([INNOVA_EMAIL, INNOVA_PASSWORD, WHATSAPP_NUMBER, CALLMEBOT_API_KEY]): return
+    event_name = os.getenv("GITHUB_EVENT_NAME", "")
+    if event_name == "workflow_dispatch":
+        enviar_whatsapp("🔍 *Innova Cloud:* Revisando tus correos manualmente ahora mismo...")
     vistos = cargar_mensajes_vistos()
     session = requests.Session()
-    session.headers.update({
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    })
-
+    session.headers.update({"User-Agent": "Mozilla/5.0"})
     if not login(session): return
-
     mensajes = obtener_mensajes(session)
     if not SEEN_FILE.exists():
         guardar_mensajes_vistos({m["id"] for m in mensajes})
-        log.info("Registro inicial completado.")
         return
-
     nuevos = [m for m in mensajes if m["id"] not in vistos]
-    log.info(f"Mensajes nuevos: {len(nuevos)}")
-    
     for m in reversed(nuevos):
-        log.info(f"Notificando: {m['asunto']}")
         detalle = obtener_detalle(session, m["id"])
         if enviar_whatsapp(generar_resumen(m, detalle)):
             vistos.add(m["id"])
         time.sleep(2)
-
     guardar_mensajes_vistos(vistos)
-    log.info("Proceso terminado exitosamente.")
 
 if __name__ == "__main__":
     main()
