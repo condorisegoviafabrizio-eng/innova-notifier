@@ -1,0 +1,41 @@
+name: Innova Notifier Cloud
+
+on:
+  schedule:
+      - cron: '*/30 * * * *'  # Se ejecuta cada 30 minutos
+        workflow_dispatch:      # Permite ejecutar manualmente
+
+        jobs:
+          build:
+              runs-on: ubuntu-latest
+                  permissions:
+                        contents: write
+                            steps:
+                                  - name: Checkout repo
+                                          uses: actions/checkout@v4
+
+                                                - name: Setup Python
+                                                        uses: actions/setup-python@v5
+                                                                with:
+                                                                          python-version: '3.12'
+
+                                                                                - name: Install dependencies
+                                                                                        run: |
+                                                                                                  pip install requests beautifulsoup4
+
+                                                                                                        - name: Run Notifier
+                                                                                                                env:
+                                                                                                                          INNOVA_EMAIL: ${{ secrets.INNOVA_EMAIL }}
+                                                                                                                                    INNOVA_PASSWORD: ${{ secrets.INNOVA_PASSWORD }}
+                                                                                                                                              WHATSAPP_NUMBER: ${{ secrets.WHATSAPP_NUMBER }}
+                                                                                                                                                        CALLMEBOT_API_KEY: ${{ secrets.CALLMEBOT_API_KEY }}
+                                                                                                                                                                run: python cloud_monitor.py
+                                                                                                                                                                
+                                                                                                                                                                      - name: Commit changes
+                                                                                                                                                                              run: |
+                                                                                                                                                                                        git config --global user.name "github-actions[bot]"
+                                                                                                                                                                                                  git config --global user.email "github-actions[bot]@users.noreply.github.com"
+                                                                                                                                                                                                            git add mensajes_vistos.json
+                                                                                                                                                                                                                      git commit -m "Update seen messages [skip ci]" || echo "No changes to commit"
+                                                                                                                                                                                                                                git push
+                                                                                                                                                                                                                                
