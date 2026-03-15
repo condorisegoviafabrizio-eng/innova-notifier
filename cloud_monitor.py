@@ -4,11 +4,20 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 
 # --- Configuracion (GitHub Secrets) ---
-INNOVA_EMAIL = os.getenv("INNOVA_EMAIL"); INNOVA_PASSWORD = os.getenv("INNOVA_PASSWORD")
-WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER"); CALLMEBOT_API_KEY = os.getenv("CALLMEBOT_API_KEY")
-BASE_URL = "https://innovafamily.pe"; LOGIN_URL = f"{BASE_URL}/Account/Login"
-MENSAJES_API = f"{BASE_URL}/Mensaje/ConsultarMensajePorPagina"; DETALLE_API = f"{BASE_URL}/Mensaje/ConsultaDetalleMensaje"
-SEEN_FILE = Path("mensajes_vistos.json"); HISTORY_FILE = Path("historial_mensajes.json"); INDEX_FILE = Path("index.html")
+INNOVA_EMAIL = os.getenv("INNOVA_EMAIL")
+INNOVA_PASSWORD = os.getenv("INNOVA_PASSWORD")
+WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER")
+CALLMEBOT_API_KEY = os.getenv("CALLMEBOT_API_KEY")
+
+BASE_URL = "https://innovafamily.pe"
+LOGIN_URL = f"{BASE_URL}/Account/Login"
+MENSAJES_API = f"{BASE_URL}/Mensaje/ConsultarMensajePorPagina"
+DETALLE_API = f"{BASE_URL}/Mensaje/ConsultaDetalleMensaje"
+
+SEEN_FILE = Path("mensajes_vistos.json")
+HISTORY_FILE = Path("historial_mensajes.json")
+INDEX_FILE = Path("index.html")
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("InnovaCloud")
 
@@ -18,19 +27,26 @@ def cargar_json(path, default):
         except: return default
     return default
 
-def guardar_json(path, data): path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+def guardar_json(path, data):
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
 
 def login(session):
-    log.info("Accediendo..."); r = session.get(LOGIN_URL, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
+    log.info("Iniciando Login...")
+    r = session.get(LOGIN_URL, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
     if r.status_code != 200: return False
-    soup = BeautifulSoup(r.text, "html.parser"); token_tag = soup.find("input", {"name": "__RequestVerificationToken"})
+    soup = BeautifulSoup(r.text, "html.parser")
+    token_tag = soup.find("input", {"name": "__RequestVerificationToken"})
     if not token_tag: return False
-    token = token_tag["value"]; data = {"Correo": INNOVA_EMAIL, "Password": INNOVA_PASSWORD, "__RequestVerificationToken": token}
-    return "Login" not in session.post(LOGIN_URL, data=data, timeout=30).url
+    token = token_tag["value"]
+    data = {"Correo": INNOVA_EMAIL, "Password": INNOVA_PASSWORD, "__RequestVerificationToken": token}
+    r = session.post(LOGIN_URL, data=data, timeout=30)
+    return "Login" not in r.url
 
 def obtener_mensajes(session):
-    r = session.post(MENSAJES_API, data={"IdPersona": "0", "TipoBandeja": "1", "NumeroPagina": "1", "TamanioPagina": "20", "EsFavorito": "false"}, headers={"X-Requested-With": "XMLHttpRequest"})
-    return [{"id": str(m.get("IdCorreo", m.get("IdMensaje", ""))), "asunto": m.get("Asunto", ""), "remitente": m.get("NombreRemitente", ""), "fecha": m.get("FechaEnvio", ""), "snippet": m.get("Contenido", "")} for m in json.loads(r.json().get("DataJson", "[]"))]
+    payload = {"IdPersona": "0", "TipoBandeja": "1", "NumeroPagina": "1", "TamanioPagina": "20", "EsFavorito": "false"}
+    r = session.post(MENSAJES_API, data=payload, headers={"X-Requested-With": "XMLHttpRequest"})
+    data = r.json()
+    return [{"id": str(m.get("IdCorreo", m.get("IdMensaje", ""))), "asunto": m.get("Asunto", ""), "remitente": m.get("NombreRemitente", ""), "fecha": m.get("FechaEnvio", ""), "snippet": m.get("Contenido", "")} for m in json.loads(data.get("DataJson", "[]"))]
 
 def enviar_whatsapp(msg):
     if not WHATSAPP_NUMBER or not CALLMEBOT_API_KEY: return False
@@ -38,8 +54,9 @@ def enviar_whatsapp(msg):
     try: return requests.get(url, timeout=20).status_code == 200
     except: return False
 
-def generar_dashboard_html(mensajes):
-    ts = datetime.now().strftime("%d/%m/%Y %H:%M:%S"); trigger = "https://github.com/condorisegoviafabrizio-eng/innova-notifier/actions/workflows/github_workflow.yml"
+def generar_dashboard(mensajes):
+    ts = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    trigger = "https://github.com/condorisegoviafabrizio-eng/innova-notifier/actions/workflows/github_workflow.yml"
     msg_html = ""
     for m in mensajes:
         es_imp = any(w in m['asunto'].upper() for w in ["FACTURA", "PAGO", "IMPORTANTE", "CIRCULAR"])
@@ -50,21 +67,25 @@ def generar_dashboard_html(mensajes):
 def main():
     if not all([INNOVA_EMAIL, INNOVA_PASSWORD]): return
     if os.getenv("GITHUB_EVENT_NAME") == "workflow_dispatch": enviar_whatsapp("🔍 *Innova Cloud:* Revisando manualmente...")
-    vistos = set(cargar_json(SEEN_FILE, {"ids": []})["ids"]); session = requests.Session(); session.headers.update({{"User-Agent": "Mozilla/5.0"}})
+    vistos_raw = cargar_json(SEEN_FILE, {"ids": []})["ids"]
+    vistos = set(str(i) for i in vistos_raw if not isinstance(i, dict))
+    session = requests.Session(); session.headers.update({"User-Agent": "Mozilla/5.0"})
     if not login(session): return
     mensajes = obtener_mensajes(session); historial = cargar_json(HISTORY_FILE, [])
-    ids_h = {{m["id"] for m in historial}}
+    ids_h = {str(m["id"]) for m in historial}
     for m in mensajes:
-        if m["id"] not in ids_h: historial.insert(0, m)
-    historial = historial[:50]; guardar_json(HISTORY_FILE, historial); generar_dashboard_html(historial)
+        if str(m["id"]) not in ids_h: historial.insert(0, m)
+    historial = historial[:50]; guardar_json(HISTORY_FILE, historial); generar_dashboard(historial)
     if not SEEN_FILE.exists():
-        guardar_json(SEEN_FILE, {{"ids": list(vistos | {{m["id"] for m in mensajes}})}}); return
-    nuevos = [m for m in mensajes if m["id"] not in vistos]
+        guardar_json(SEEN_FILE, {"ids": list(vistos | {str(m["id"]) for m in mensajes})}); return
+    nuevos = [m for m in mensajes if str(m["id"]) not in vistos]
     for m in reversed(nuevos):
-        log.info(f"Notificando: {{m['asunto']}}")
-        asunto = m['asunto'].upper(); h = f"*NUEVO MENSAJE INNOVA*"; h = f"🚨 {{h}} (PRIORIDAD) 🚨" if any(w in asunto for w in ["FACTURA", "PAGO", "IMPORTANTE"]) else f"📩 {{h}}"
-        if enviar_whatsapp(f"{{h}}\n\n*Asunto:* {{m['asunto']}}\n*De:* {{m['remitente']}}\n\n🔗 Dashboard: condorisegoviafabrizio-eng.github.io/innova-notifier"): vistos.add(m["id"])
+        log.info(f"Notificando: {m['asunto']}")
+        asunto = m['asunto'].upper()
+        h = "🚨 *NUEVO MENSAJE INNOVA* (PRIORIDAD) 🚨" if any(w in asunto for w in ["FACTURA", "PAGO", "IMPORTANTE"]) else "📩 *NUEVO MENSAJE INNOVA*"
+        msg = f"{h}\n\n*Asunto:* {m['asunto']}\n*De:* {m['remitente']}\n\n🌍 Dashboard: condorisegoviafabrizio-eng.github.io/innova-notifier"
+        if enviar_whatsapp(msg): vistos.add(str(m["id"]))
         time.sleep(2)
-    guardar_json(SEEN_FILE, {{"ids": list(vistos)}})
+    guardar_json(SEEN_FILE, {"ids": list(vistos)})
 
 if __name__ == "__main__": main()
