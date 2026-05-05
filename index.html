@@ -1,0 +1,336 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innova Notifier Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --primary: #f97316;
+            --accent: #38bdf8;
+            --text: #f8fafc;
+            --dim: #94a3b8;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeIn 1s ease-out;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .status {
+            font-size: 0.875rem;
+            color: var(--dim);
+            margin-top: 0.5rem;
+        }
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            border-left: 2px solid var(--card);
+        }
+        .message-card {
+            background: var(--card);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(255,255,255,0.05);
+            animation: slideUp 0.5s ease-out forwards;
+        }
+        .message-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+            border-color: var(--primary);
+        }
+        .message-card::before {
+            content: '';
+            position: absolute;
+            left: -2.65rem;
+            top: 1.5rem;
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            border: 4px solid var(--bg);
+        }
+        .meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        .asunto {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        .remitente {
+            font-size: 0.875rem;
+            color: var(--dim);
+            margin-bottom: 1rem;
+        }
+        .snippet {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--dim);
+        }
+        .empty {
+            text-align: center;
+            padding: 4rem;
+            color: var(--dim);
+            font-style: italic;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        .footer { margin-top: 4rem; text-align: center; color: var(--dim); font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Innova Notifier</h1>
+            <div class="status">Últimas 24 horas de notificaciones</div>
+        </header>
+        
+        <div class="timeline">
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 12013243</span>
+                </div>
+                <div class="asunto"> Env&iacute;o de Ficha &Uacute;nica de Matr&iacute;cula (FUM) </div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 12010493</span>
+                </div>
+                <div class="asunto">Conectados con Innova | Bolet&iacute;n de noticias 05.05</div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 12009298</span>
+                </div>
+                <div class="asunto">&iexcl;Convenio de Ingl&eacute;s con BRIT&Aacute;NICO! a precios exclusivos para familias de Innova Schools</div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 11999798</span>
+                </div>
+                <div class="asunto">Comunicado Concesionario Mes de Mayo - Almuerzos y loncheras</div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 11994300</span>
+                </div>
+                <div class="asunto">Prevenci&oacute;n del s&iacute;ndrome de boca, manos y pies </div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 11993277</span>
+                </div>
+                <div class="asunto">Evaluaci&ograve;n de matem&agrave;ticas unidad 2</div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 11982858</span>
+                </div>
+                <div class="asunto">CAMPA&Ntilde;A DE VACUNACI&Oacute;N </div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 11981851</span>
+                </div>
+                <div class="asunto">Seguimiento acad&eacute;mico &ndash; Plan Lector</div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 11981029</span>
+                </div>
+                <div class="asunto">&iexcl;Recuerda que est&aacute; disponible la pensi&oacute;n de abril!</div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 11978943</span>
+                </div>
+                <div class="asunto">PERIODO DE AUSENCIA - MES DE MAYO</div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 11978861</span>
+                </div>
+                <div class="asunto">&iexcl;Felicitamos a los ganadores por su compra de &uacute;tiles!</div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 11970640</span>
+                </div>
+                <div class="asunto">&iexcl;Conoce a los ganadores! | Gracias por crear tu Momento Innova</div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 11969676</span>
+                </div>
+                <div class="asunto">CAMPA&Ntilde;A DE VACUNACI&Oacute;N CONTRA VPH</div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 11967885</span>
+                </div>
+                <div class="asunto">Entrega de evaluaciones &ndash; Comprensi&oacute;n de texto (6&deg;C y 6&deg;D)</div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 11958827</span>
+                </div>
+                <div class="asunto">Conectados con Innova | Bolet&iacute;n de noticias 28.04</div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 11958224</span>
+                </div>
+                <div class="asunto">PRODUCTO FINAL</div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 11954299</span>
+                </div>
+                <div class="asunto">&iexcl;Nuestros estudiantes cuidan el planeta!</div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 11953104</span>
+                </div>
+                <div class="asunto">Acta de reunión con familia</div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 11944300</span>
+                </div>
+                <div class="asunto">&iexcl;Te recordamos nuestros m&eacute;todos de pago de pensiones!</div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+            <div class="message-card">
+                <div class="meta">
+                    <span></span>
+                    <span>ID: 11886992</span>
+                </div>
+                <div class="asunto">Re:  CITACI&Oacute;N POR RENDIMIENTO ACAD&Eacute;MICO</div>
+                <div class="remitente">De: Inova</div>
+                <div class="snippet"></div>
+            </div>
+            
+        </div>
+
+        <div class="footer">
+            Actualizado por Innova Bot el 05/05/2026 22:31
+        </div>
+    </div>
+</body>
+</html>
