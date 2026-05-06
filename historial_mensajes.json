@@ -1,5 +1,12 @@
 [
   {
+    "id": "12020834",
+    "asunto": "Comunicado",
+    "remitente": "Inova",
+    "fecha": "",
+    "snippet": ""
+  },
+  {
     "id": "12013243",
     "asunto": " Env&iacute;o de Ficha &Uacute;nica de Matr&iacute;cula (FUM) ",
     "remitente": "Inova",
@@ -128,13 +135,6 @@
   {
     "id": "11944300",
     "asunto": "&iexcl;Te recordamos nuestros m&eacute;todos de pago de pensiones!",
-    "remitente": "Inova",
-    "fecha": "",
-    "snippet": ""
-  },
-  {
-    "id": "11886992",
-    "asunto": "Re:  CITACI&Oacute;N POR RENDIMIENTO ACAD&Eacute;MICO",
     "remitente": "Inova",
     "fecha": "",
     "snippet": ""
