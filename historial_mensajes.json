@@ -1,5 +1,12 @@
 [
   {
+    "id": "12084702",
+    "asunto": "&iexcl;Comunicado importante!",
+    "remitente": "Inova",
+    "fecha": "",
+    "snippet": ""
+  },
+  {
     "id": "12083601",
     "asunto": "&iexcl;Conoce nuestros talleres extracurriculares!",
     "remitente": "Inova",
@@ -128,13 +135,6 @@
   {
     "id": "12025129",
     "asunto": "Entrega de productos finales y evaluaci&oacute;n de lectura ",
-    "remitente": "Inova",
-    "fecha": "",
-    "snippet": ""
-  },
-  {
-    "id": "12020834",
-    "asunto": "Comunicado",
     "remitente": "Inova",
     "fecha": "",
     "snippet": ""
