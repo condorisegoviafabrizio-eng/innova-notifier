@@ -1,5 +1,12 @@
 [
   {
+    "id": "12122334",
+    "asunto": "Conectados con Innova | Bolet&iacute;n de noticias 25.05",
+    "remitente": "Inova",
+    "fecha": "",
+    "snippet": ""
+  },
+  {
     "id": "12119909",
     "asunto": "Recordatorio de reuniones de padres",
     "remitente": "Inova",
@@ -128,13 +135,6 @@
   {
     "id": "12068893",
     "asunto": "&iexcl;Bienvenidos al segundo bimestre!",
-    "remitente": "Inova",
-    "fecha": "",
-    "snippet": ""
-  },
-  {
-    "id": "12067508",
-    "asunto": "Presentaci&oacute;n de la Unidad 2",
     "remitente": "Inova",
     "fecha": "",
     "snippet": ""
