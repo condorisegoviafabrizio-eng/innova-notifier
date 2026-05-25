@@ -1,5 +1,12 @@
 [
   {
+    "id": "12123344",
+    "asunto": "&iexcl;Comunicado importante!",
+    "remitente": "Inova",
+    "fecha": "",
+    "snippet": ""
+  },
+  {
     "id": "12122334",
     "asunto": "Conectados con Innova | Bolet&iacute;n de noticias 25.05",
     "remitente": "Inova",
@@ -128,13 +135,6 @@
   {
     "id": "12068970",
     "asunto": "&iexcl;Conoce nuestro taller Mateinnovando de Matlab!",
-    "remitente": "Inova",
-    "fecha": "",
-    "snippet": ""
-  },
-  {
-    "id": "12068893",
-    "asunto": "&iexcl;Bienvenidos al segundo bimestre!",
     "remitente": "Inova",
     "fecha": "",
     "snippet": ""
