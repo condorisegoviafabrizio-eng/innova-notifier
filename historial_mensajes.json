@@ -1,5 +1,12 @@
 [
   {
+    "id": "12153544",
+    "asunto": "Comunicado importante",
+    "remitente": "Inova",
+    "fecha": "",
+    "snippet": ""
+  },
+  {
     "id": "12149386",
     "asunto": "&iexcl;Nuevo taller virtual de Finanzas!",
     "remitente": "Inova",
@@ -128,13 +135,6 @@
   {
     "id": "12091728",
     "asunto": "&iexcl;&Uacute;ltimas vacantes! Participa en los talleres de mateinnovando y finazas",
-    "remitente": "Inova",
-    "fecha": "",
-    "snippet": ""
-  },
-  {
-    "id": "12087574",
-    "asunto": " Carnet de recojo ante desastres",
     "remitente": "Inova",
     "fecha": "",
     "snippet": ""
